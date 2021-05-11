@@ -1,5 +1,6 @@
 const path = require('path')
 const express = require('express')
+const createUrlRouter = require('./routers/createUrlRouters')
 
 const app = express();
 
@@ -10,13 +11,12 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(express.json({limit: '10kb'}))
-app.use(express.urlencoded({extended:true}))
+app.use(express.urlencoded({extended:false}))
 
-app.get('/', (req, res)=>{
-    res.status(200).json({
-        status:'success',
-        message: 'Hello from home'
-    })
-})
+app.use('/', createUrlRouter)
+
+app.all('*', (req, res, next) => {
+    next(`Can not find ${req.originalUrl} on this server`);
+});
 
 module.exports = app
